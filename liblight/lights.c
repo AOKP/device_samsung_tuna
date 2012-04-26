@@ -42,6 +42,13 @@ char const *const LED_FILE = "/dev/an30259a_leds";
 // brightness at mid-slope, on 0 - 127 scale
 #define MID_BRIGHTNESS  31
 
+#define PRIORITY_OFF 0
+#define PRIORITY_ATTENTION_LED 1
+#define PRIORITY_NOTIFICATION_LED 2
+
+static int led_priority_current = PRIORITY_OFF;
+static int led_priority_new = PRIORITY_OFF;
+
 void init_g_lock(void)
 {
 	pthread_mutex_init(&g_lock, NULL);
@@ -110,21 +117,24 @@ static int write_leds(struct an30259a_pr_control *led)
 	int fd;
 
 	pthread_mutex_lock(&g_lock);
+	//LOGD("write_leds: led_priority_new %d, led_priority_current %d", led_priority_new, led_priority_current);
+	if ((led_priority_new > led_priority_current) || (led_priority_new == PRIORITY_OFF)) {
+		fd = open(LED_FILE, O_RDWR);
+		if (fd >= 0) {
+			err = ioctl(fd, AN30259A_PR_SET_IMAX, &imax);
+			if (err)
+				LOGE("failed to set imax");
 
-	fd = open(LED_FILE, O_RDWR);
-	if (fd >= 0) {
-		err = ioctl(fd, AN30259A_PR_SET_IMAX, &imax);
-		if (err)
-			LOGE("failed to set imax");
+			err = ioctl(fd, AN30259A_PR_SET_LED, led);
+			if (err < 0)
+				LOGE("failed to set leds!");
 
-		err = ioctl(fd, AN30259A_PR_SET_LED, led);
-		if (err < 0)
-			LOGE("failed to set leds!");
-
-		close(fd);
-	} else {
-		LOGE("failed to open %s!", LED_FILE);
-		err =  -errno;
+			close(fd);
+		} else {
+			LOGE("failed to open %s!", LED_FILE);
+			err =  -errno;
+		}
+		led_priority_current = led_priority_new;
 	}
 
 	pthread_mutex_unlock(&g_lock);
@@ -141,6 +151,7 @@ static int set_light_leds(struct light_state_t const *state, int type)
 	switch (state->flashMode) {
 	case LIGHT_FLASH_NONE:
 		led.state = LED_LIGHT_OFF;
+		led_priority_new = PRIORITY_OFF;
 		break;
 	case LIGHT_FLASH_TIMED:
 	case LIGHT_FLASH_HARDWARE:
@@ -167,12 +178,30 @@ static int set_light_leds(struct light_state_t const *state, int type)
 static int set_light_leds_notifications(struct light_device_t *dev,
 			struct light_state_t const *state)
 {
+	led_priority_new = PRIORITY_NOTIFICATION_LED;
+
+	// stop attention flashing first
+	if ((led_priority_current == PRIORITY_ATTENTION_LED) && (state->flashMode != LIGHT_FLASH_NONE)) {
+
+		struct light_state_t tmp_state;
+
+		memset(&tmp_state, 0, sizeof(struct light_state_t));
+		tmp_state.color = state->color;
+		tmp_state.flashMode = LIGHT_FLASH_NONE;
+		tmp_state.flashOnMS = state->flashOnMS;
+		tmp_state.flashOffMS = state->flashOffMS;
+		tmp_state.brightnessMode = state->brightnessMode;
+
+		set_light_leds(&tmp_state, 0);
+	}
+
 	return set_light_leds(state, 0);
 }
 
 static int set_light_leds_attention(struct light_device_t *dev,
 			struct light_state_t const *state)
 {
+	led_priority_new = PRIORITY_ATTENTION_LED;
 	return set_light_leds(state, 1);
 }
 
