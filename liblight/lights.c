@@ -28,6 +28,7 @@
 
 static pthread_once_t g_init = PTHREAD_ONCE_INIT;
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
+static int priorityLedState = LED_LIGHT_OFF;
 
 char const *const LCD_FILE = "/sys/class/backlight/s6e8aa0/brightness";
 char const *const LED_FILE = "/dev/an30259a_leds";
@@ -103,7 +104,7 @@ static int close_lights(struct light_device_t *dev)
 }
 
 /* LEDs */
-static int write_leds(struct an30259a_pr_control *led)
+static int write_leds(struct an30259a_pr_control *led, int lowPriority)
 {
 	int err = 0;
 	int imax = IMAX;
@@ -111,30 +112,41 @@ static int write_leds(struct an30259a_pr_control *led)
 
 	pthread_mutex_lock(&g_lock);
 
-	fd = open(LED_FILE, O_RDWR);
-	if (fd >= 0) {
-		err = ioctl(fd, AN30259A_PR_SET_IMAX, &imax);
-		if (err)
-			LOGE("failed to set imax");
+	// if this is the low priority (attention) led, ignore the call
+	// unless the lamp is already off
+	if (!lowPriority || (priorityLedState == LED_LIGHT_OFF))
+	{
+		fd = open(LED_FILE, O_RDWR);
+		if (fd >= 0) {
+			err = ioctl(fd, AN30259A_PR_SET_IMAX, &imax);
+			if (err)
+				LOGE("failed to set imax");
 
-		err = ioctl(fd, AN30259A_PR_SET_LED, led);
-		if (err < 0)
-			LOGE("failed to set leds!");
+			err = ioctl(fd, AN30259A_PR_SET_LED, led);
+			if (err < 0)
+				LOGE("failed to set leds!");
 
-		close(fd);
-	} else {
-		LOGE("failed to open %s!", LED_FILE);
-		err =  -errno;
+			close(fd);
+			// record the new state if not low (attention) priority
+			if (!lowPriority)
+				priorityLedState = led->state;
+
+		} else {
+			LOGE("failed to open %s!", LED_FILE);
+			err =  -errno;
+		}
+
 	}
-
 	pthread_mutex_unlock(&g_lock);
-
 	return err;
 }
 
-static int set_light_leds(struct light_state_t const *state, int type)
+static int set_light_leds(struct light_state_t const *state, int lowPriority)
 {
 	struct an30259a_pr_control led;
+
+	// the priority code has to be handled in a mutex, so deal with it
+	// write_leds() to stick everything in a single mutex
 
 	memset(&led, 0, sizeof(led));
 
@@ -161,7 +173,7 @@ static int set_light_leds(struct light_state_t const *state, int type)
 		return -EINVAL;
 	}
 
-	return write_leds(&led);
+	return write_leds(&led, lowPriority);
 }
 
 static int set_light_leds_notifications(struct light_device_t *dev,
@@ -173,6 +185,7 @@ static int set_light_leds_notifications(struct light_device_t *dev,
 static int set_light_leds_attention(struct light_device_t *dev,
 			struct light_state_t const *state)
 {
+	// tuna doesn't have an attention light, so abuse the notification light, but mark it as a lower priority in case of conflict
 	return set_light_leds(state, 1);
 }
 
