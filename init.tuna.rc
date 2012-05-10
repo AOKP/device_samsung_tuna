@@ -33,6 +33,9 @@ on post-fs-data
     chmod 0660 /sys/devices/tuna_otg/uart_sel
     chmod 0660 /sys/devices/tuna_otg/usb_sel
 
+# Make sure that /data/.nvram_net.txt exists during wifi initialization
+    start set-macaddr
+
 on boot
 	mount debugfs /sys/kernel/debug /sys/kernel/debug
 	chmod 0666 /dev/pvrsrvkm
@@ -172,6 +175,16 @@ service smc_pa_wvdrm /system/bin/smc_pa_ctrl \
 # underlying files in /data/media will be created with user and group media_rw (1023)
 service sdcard /system/bin/sdcard /data/media 1023 1023
 	class late_start
+
+# set device specific MAC addresses, depends on preceding start of rild
+service set-macaddr /system/vendor/bin/set-macaddr
+    user root
+    group root
+    disabled
+    oneshot
+
+on property:sys.boot_completed=1
+    start set-macaddr
 
 service wpa_supplicant /system/bin/wpa_supplicant \
 	-Dnl80211 -iwlan0 -puse_p2p_group_interface=1 -e/data/misc/wifi/entropy.bin

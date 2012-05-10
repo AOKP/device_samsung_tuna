@@ -103,6 +103,10 @@ PRODUCT_COPY_FILES += \
 	device/samsung/tuna/sec_jack.kl:system/usr/keylayout/sec_jack.kl \
 	device/samsung/tuna/sec_jack.kcm:system/usr/keychars/sec_jack.kcm
 
+# script to set bluetooth and wlan MAC addresses
+PRODUCT_COPY_FILES += \
+        device/samsung/tuna/prebuilt/bin/set-macaddr:system/vendor/bin/set-macaddr
+
 # Input device calibration files
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/Melfas_MMSxxx_Touchscreen.idc:system/usr/idc/Melfas_MMSxxx_Touchscreen.idc

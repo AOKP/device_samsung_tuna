@@ -1,0 +1,53 @@
+#!/system/bin/sh
+
+#
+# NOTE: this script depends on samsung rild
+#
+#       $MACINFO is created by samsung rild
+#
+
+DEVICE=`getprop ro.product.board`
+if [ $DEVICE == "tuna" ]; then
+  MACINFO="/data/misc/wifi/.nvmac.info"
+else
+  MACINFO="/data/.nvmac.info"
+fi
+
+if [ -f $MACINFO ]; then
+
+  # read wlan mac address
+  WLMAC=$(cat $MACINFO)
+
+  # write updated wifi driver config
+  cat /system/vendor/firmware/nvram_net.txt | sed "s/macaddr=\([0-9a-fA-F]\{2\}\:\?\)\+/macaddr=$WLMAC/" > /data/.nvram_net.txt
+  chown radio.radio /data/.nvram_net.txt
+  chmod 0664 /data/.nvram_net.txt
+
+fi
+
+# /data/.nvram_net.txt *needs* to exist, even if the MAC is incorrect.
+# On p1c, $MACINFO is created too late in the boot process for this script
+# to work on the first boot. Go ahead and copy stock nvram_net.txt just in
+# case so that wifi doesn't crash the system if the user tries to start it
+# on first boot.
+if [ ! -f /data/.nvram_net.txt ]; then
+
+  cp /system/vendor/firmware/nvram_net.txt /data/.nvram_net.txt
+  chown radio.radio /data/.nvram_net.txt
+  chmod 0664 /data/.nvram_net.txt
+
+fi
+
+# non-existant on p1c; no harm tho
+if [ -f /efs/imei/bt.txt ]; then
+
+  # read bluetooth mac address
+  BTMAC=$(cat /efs/imei/bt.txt | cut -f2 -d: | sed 's/\(..\)/\1:/g;s/:$//')
+
+  # write bluetooth mac and update path reference
+  echo -n $BTMAC > /data/.nvram_btmac
+  chown bluetooth.bluetooth /data/.nvram_btmac
+  chmod 0664 /data/.nvram_btmac
+  setprop ro.bt.bdaddr_path /data/.nvram_btmac
+
+fi
