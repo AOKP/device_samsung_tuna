@@ -1,0 +1,10 @@
+Change-Id: Iac822b0c202b5158320622d8545c9949391a3681
+Code-Review+1: Will DeBerry <hillbillyhacker86@gmail.com>
+Code-Review+2: Roman Birg <romanbirg@gmail.com>
+Verified+1: Roman Birg <romanbirg@gmail.com>
+Code-Review+1: Gergely Szell <sethyx@gmail.com>
+Submitted-by: Roman Birg <romanbirg@gmail.com>
+Submitted-at: Tue, 22 May 2012 00:05:08 -0500
+Reviewed-on: http://gerrit.sudoservers.com/753
+Project: AOKP/device_samsung_tuna
+Branch: refs/heads/ics
