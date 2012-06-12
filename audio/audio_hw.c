@@ -1,4 +1,5 @@
 /*
+ * Portions Copyright (C) 2012 VMware, Inc. All Rights Reserved.
  * Copyright (C) 2011 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -576,7 +577,7 @@ static int is_device_toro(void)
     property_get(PRODUCT_DEVICE_PROPERTY, property, PRODUCT_DEVICE_TORO);
 
     /* return true if the property matches the given value */
-    return strcmp(property, PRODUCT_DEVICE_TORO) == 0;
+    return strncmp(property, PRODUCT_DEVICE_TORO, 4) == 0;
 }
 
 /* The enable flag when 0 makes the assumption that enums are disabled by
