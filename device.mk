@@ -48,6 +48,9 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
 	tuna_hdcp_keys
 
+PRODUCT_PACKAGES += \
+        GNexusParts \
+
 PRODUCT_COPY_FILES := \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
 	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
