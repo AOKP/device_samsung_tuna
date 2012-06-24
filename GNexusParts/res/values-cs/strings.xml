@@ -5,7 +5,7 @@
   <string name="display_title">ZOBRAZENÍ</string>
   <string name="category_cpu_title">CPU</string>
   <string name="category_screen_title">Nastavení WM8994 (voodoo)</string>
-    <string name="color_tuning_title_head">Ladění násobíčů barev</string>
+    <string name="color_tuning_title_head">Ladění násobičů barev</string>
     <string name="color_tuning_summary_head">Kaliborvat násobiče barev obrazovky</string>
     <string name="gamma_tuning_title_head">Ladění gama barev</string>
     <string name="gamma_tuning_summary_head">Kalibrovat korekci gama barev</string>
