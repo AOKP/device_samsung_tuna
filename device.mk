@@ -19,12 +19,6 @@
 #
 # Everything in this directory will become public
 
-ifeq ($(TARGET_PREBUILT_KERNEL),)
-LOCAL_KERNEL := device/samsung/tuna/kernel
-else
-LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
-endif
-
 DEVICE_PACKAGE_OVERLAYS := device/samsung/tuna/overlay
 
 # This device is xhdpi.  However the platform doesn't
@@ -67,6 +61,11 @@ PRODUCT_PACKAGES += \
 
 PRODUCT_COPY_FILES += \
 	$(LOCAL_KERNEL):kernel \
+
+PRODUCT_PACKAGES += \
+        GNexusParts \
+
+PRODUCT_COPY_FILES := \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
 	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
 	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
@@ -87,12 +86,11 @@ endif
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
 
-PRODUCT_PROPERTY_OVERRIDES := \
-	wifi.interface=wlan0
-
 # Enable AAC 5.1 output
 PRODUCT_PROPERTY_OVERRIDES += \
 	media.aac_51_output_enabled=true
+	wifi.interface=wlan0 \
+	wifi.supplicant_scan_interval=180
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
@@ -214,3 +212,7 @@ $(call inherit-product-if-exists, vendor/samsung/tuna/device-vendor.mk)
 BOARD_WLAN_DEVICE_REV := bcm4330_b2
 WIFI_BAND             := 802_11_ABG
 $(call inherit-product-if-exists, hardware/broadcom/wlan/bcmdhd/firmware/bcm4330/device-bcm.mk)
+
+# vold
+PRODUCT_COPY_FILES += \
+	device/samsung/tuna/vold.fstab:system/etc/vold.fstab

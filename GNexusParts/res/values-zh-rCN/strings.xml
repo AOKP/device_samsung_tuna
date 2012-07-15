@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Galaxy Nexus 设置</string>
+
+    <!-- Page Headers -->
+    <string name="general_title">常规</string>
+    <string name="display_title">显示</string>
+
+
+    <string name="category_screen_title">WM8994 设置 ( voodoo )</string>
+    <string name="color_tuning_title_head">颜色增益调整</string>
+    <string name="color_tuning_summary_head">调整屏幕颜色增益(Multiplier)</string>
+    <string name="gamma_tuning_title_head">颜色灰阶调整</string>
+    <string name="gamma_tuning_summary_head">调整屏幕颜色灰阶(Gamma)</string>
+    <string name="color_hack_presets_title_head">预置颜色方案</string>
+    <string name="color_hack_presets_summary_head">根据大多数用户使用经验总结的屏幕颜色增益及灰阶调节方案</string>
+    <string name="color_red_title">红</string>
+    <string name="color_green_title">绿</string>
+    <string name="color_blue_title">蓝</string>
+    <string name="gamma_default_title">默认设置</string>
+    <string name="gamma_CM_title">CM 推荐设置</string>
+    <string name="gamma_bright_title">明亮</string>
+    <string name="color_default_title">默认设置</string>
+    <string name="color_CM_title">CM 推荐设置</string>
+    <string name="color_dark_title">深暗</string>
+    <string name="gamma_dss_title">软件调节灰阶</string>
+
+
+    <string name="vibrator_tuning_title_head">调整振动反馈力度</string>
+    <string name="vibrator_tuning_summary_head">控制震动反馈的默认力度</string>
+
+    <string name="vibrator_title">振动 %</string>
+    <string name="vibrator_default_title">默认</string>
+
+    <string name="preset1_default_title">默认.</string>
+    <string name="preset2_default_title">自然</string>
+    <string name="preset3_default_title">深蓝</string>
+    <string name="preset4_default_title">暖色</string>
+    <string name="preset5_default_title">冷色</string>
+    <string name="preset6_default_title">交叉冲印</string>
+    <string name="credits_presets">制作: ale.landra91 cpaixao provolinoo</string>
+
+    <string name="category_touchkey_title">触摸按键</string>
+    <string name="touchkey_notification_title_head">背光通知</string>
+    <string name="touchkey_notification_summary_head">收到通知时触摸按键背光将开启。</string>
+
+    <string name="category_radio_title">基带</string>
+
+    <string name="hspa_summary_head">启用 HSDPA/HSUPA</string>
+
+</resources>
