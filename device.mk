@@ -19,6 +19,12 @@
 #
 # Everything in this directory will become public
 
+ifeq ($(TARGET_PREBUILT_KERNEL),)
+LOCAL_KERNEL := device/samsung/tuna/kernel
+else
+LOCAL_KERNEL := $(TARGET_PREBUILT_KERNEL)
+endif
+
 DEVICE_PACKAGE_OVERLAYS := device/samsung/tuna/overlay
 
 # This device is xhdpi.  However the platform doesn't
@@ -59,13 +65,11 @@ PRODUCT_PACKAGES += \
 #PRODUCT_PACKAGES += \
 #	keystore.tuna
 
-PRODUCT_COPY_FILES += \
-	$(LOCAL_KERNEL):kernel \
-
 PRODUCT_PACKAGES += \
-        GNexusParts \
+        GNexusParts
 
 PRODUCT_COPY_FILES := \
+	$(LOCAL_KERNEL):kernel \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
 	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
 	device/samsung/tuna/fstab.tuna:root/fstab.tuna \
@@ -86,15 +90,21 @@ endif
 PRODUCT_COPY_FILES += \
 	device/samsung/tuna/bcmdhd.cal:system/etc/wifi/bcmdhd.cal
 
-# Enable AAC 5.1 output
-PRODUCT_PROPERTY_OVERRIDES += \
-	media.aac_51_output_enabled=true
+PRODUCT_PROPERTY_OVERRIDES := \
 	wifi.interface=wlan0 \
 	wifi.supplicant_scan_interval=180
+
+# Enable AAC 5.1 output
+PRODUCT_PROPERTY_OVERRIDES += \
+        media.aac_51_output_enabled=true
 
 # Set default USB interface
 PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 	persist.sys.usb.config=mtp
+
+# SIM Toolkit
+PRODUCT_PACKAGES += \
+	Stk
 
 # NFC
 PRODUCT_PACKAGES += \
