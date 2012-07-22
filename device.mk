@@ -68,7 +68,7 @@ PRODUCT_PACKAGES += \
 PRODUCT_PACKAGES += \
         GNexusParts
 
-PRODUCT_COPY_FILES := \
+PRODUCT_COPY_FILES += \
 	$(LOCAL_KERNEL):kernel \
 	device/samsung/tuna/init.tuna.rc:root/init.tuna.rc \
 	device/samsung/tuna/init.tuna.usb.rc:root/init.tuna.usb.rc \
