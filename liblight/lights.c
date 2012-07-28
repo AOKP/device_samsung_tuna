@@ -26,6 +26,10 @@
 #include <hardware/lights.h>
 #include <linux/leds-an30259a.h>
 
+#ifndef LIBLIGHTS_SUPPORT_CHARGING_LED
+#  define LIBLIGHTS_SUPPORT_CHARGING_LED 0
+#endif
+
 static pthread_once_t g_init = PTHREAD_ONCE_INIT;
 static pthread_mutex_t g_lock = PTHREAD_MUTEX_INITIALIZER;
 
@@ -42,9 +46,24 @@ char const *const LED_FILE = "/dev/an30259a_leds";
 // brightness at mid-slope, on 0 - 127 scale
 #define MID_BRIGHTNESS  31
 
+enum LED_Type {
+    LED_TYPE_NOTIFICATION = 0,
+    LED_TYPE_ATTENTION = 1,
+#if LIBLIGHTS_SUPPORT_CHARGING_LED
+    LED_TYPE_CHARGING = 2,
+    LED_TYPE_LAST = 3
+#else
+    LED_TYPE_LAST = 2
+#endif
+};
+
+// a "stack" of virtual LED states
+static struct an30259a_pr_control g_led_states[LED_TYPE_LAST];
+
 void init_g_lock(void)
 {
 	pthread_mutex_init(&g_lock, NULL);
+    memset (g_led_states, 0, sizeof(g_led_states));
 }
 
 static int write_int(char const *path, int value)
@@ -132,49 +151,101 @@ static int write_leds(struct an30259a_pr_control *led)
 	return err;
 }
 
+// similar to write_leds(), but deals with the priority of certain virtual LEDs over others
+static int write_leds_priority()
+{
+    // find the highest priority virtual LED that should be illuminated and
+    // call write_leds() with it
+
+    int i, err = 0;
+
+    for (i = 0; i < LED_TYPE_LAST; i++) {
+        // if the LED isn't off and isn't "black" then use it
+        if ((LED_LIGHT_OFF != g_led_states[i].state) && (0x00 != g_led_states[i].color)) {
+            err = write_leds(&g_led_states[i]);
+            break;
+        }
+    }
+    if (i >= LED_TYPE_LAST) // nothing should be lit?  make sure to turn it off
+        err = write_leds(&g_led_states[i]);
+
+    return err;
+}
+
 static int set_light_leds(struct light_state_t const *state, int type)
 {
-	struct an30259a_pr_control led;
+    if ((type < 0) || (type >= LED_TYPE_LAST))
+        return -EINVAL;
 
-	memset(&led, 0, sizeof(led));
+    // set the LED information to the proper element of the array without actually
+    // changing the physical LED yet
 
-	switch (state->flashMode) {
-	case LIGHT_FLASH_NONE:
-		led.state = LED_LIGHT_OFF;
-		break;
-	case LIGHT_FLASH_TIMED:
-	case LIGHT_FLASH_HARDWARE:
-		led.state = LED_LIGHT_SLOPE;
-		led.color = state->color & 0x00ffffff;
-		// tweak to eliminate purplish tint from white color
-		if (led.color == 0x00ffffff)
-		    led.color = 0x80ff80;
-		// scale slope times based on flashOnMS
-		led.time_slope_up_1 = (SLOPE_UP_1 * state->flashOnMS) / 1000;
-		led.time_slope_up_2 = (SLOPE_UP_2 * state->flashOnMS) / 1000;
-		led.time_slope_down_1 = (SLOPE_DOWN_1 * state->flashOnMS) / 1000;
-		led.time_slope_down_2 = (SLOPE_DOWN_2 * state->flashOnMS) / 1000;
-		led.mid_brightness = MID_BRIGHTNESS;
-		led.time_off = state->flashOffMS;
-		break;
-	default:
-		return -EINVAL;
-	}
+	memset(&g_led_states[type], 0, sizeof(struct an30259a_pr_control));
 
-	return write_leds(&led);
+    // if the color is 0, turn off the LED
+    if (0x00 != state->color) {
+	    switch (state->flashMode) {
+	    case LIGHT_FLASH_NONE:
+            // flashmode 0 means to be steady-on - not to turn the LED off
+		    g_led_states[type].state = LED_LIGHT_OFF;
+		    break;
+	    case LIGHT_FLASH_TIMED:
+	    case LIGHT_FLASH_HARDWARE:
+		    g_led_states[type].state = LED_LIGHT_SLOPE;
+		    g_led_states[type].color = state->color & 0x00ffffff;
+		    // tweak to eliminate purplish tint from white color
+		    if (g_led_states[type].color == 0x00ffffff)
+		        g_led_states[type].color = 0x80ff80;
+		    // scale slope times based on flashOnMS
+		    g_led_states[type].time_slope_up_1 = (SLOPE_UP_1 * state->flashOnMS) / 1000;
+		    g_led_states[type].time_slope_up_2 = (SLOPE_UP_2 * state->flashOnMS) / 1000;
+		    g_led_states[type].time_slope_down_1 = (SLOPE_DOWN_1 * state->flashOnMS) / 1000;
+		    g_led_states[type].time_slope_down_2 = (SLOPE_DOWN_2 * state->flashOnMS) / 1000;
+		    g_led_states[type].mid_brightness = MID_BRIGHTNESS;
+		    g_led_states[type].time_off = state->flashOffMS;
+		    break;
+	    default:
+		    return -EINVAL;
+	    }
+    } else {
+        g_led_states[type].state = LED_LIGHT_OFF;
+    }
+
+    // allow write_leds_priority determine if the physical LED should be changed
+	return write_leds_priority();
 }
 
 static int set_light_leds_notifications(struct light_device_t *dev,
 			struct light_state_t const *state)
 {
-	return set_light_leds(state, 0);
+	return set_light_leds(state, LED_TYPE_NOTIFICATION);
 }
 
 static int set_light_leds_attention(struct light_device_t *dev,
 			struct light_state_t const *state)
 {
-	return set_light_leds(state, 1);
+	return set_light_leds(state, LED_TYPE_ATTENTION);
 }
+
+#if LIBLIGHTS_SUPPORT_CHARGING_LED
+static int set_light_leds_battery(struct light_device_t *dev,
+			struct light_state_t const *state)
+{
+	// return set_light_leds(state, LED_TYPE_CHARGING);
+    if (LIGHT_FLASH_NONE == state->flashMode) {
+        // can't use set_light_leds(), as it doesn't have proper support for a steady-on LED.
+		g_led_states[LED_TYPE_CHARGING].state = LED_LIGHT_ON;
+		g_led_states[LED_TYPE_CHARGING].color = state->color & 0x00ffffff;
+		// tweak to eliminate purplish tint from white color
+		if (g_led_states[LED_TYPE_CHARGING].color == 0x00ffffff)
+		    g_led_states[LED_TYPE_CHARGING].color = 0x80ff80;
+        return write_leds_priority();
+    } else {
+	    return set_light_leds(state, LED_TYPE_CHARGING);
+    }
+
+}
+#endif
 
 static int open_lights(const struct hw_module_t *module, char const *name,
 						struct hw_device_t **device)
@@ -188,6 +259,10 @@ static int open_lights(const struct hw_module_t *module, char const *name,
 		set_light = set_light_leds_notifications;
 	else if (0 == strcmp(LIGHT_ID_ATTENTION, name))
 		set_light = set_light_leds_attention;
+#if LIBLIGHTS_SUPPORT_CHARGING_LED
+    else if (0 == strcmp(LIGHT_ID_BATTERY, name))
+        set_light = set_light_leds_battery;
+#endif
 	else
 		return -EINVAL;
 
