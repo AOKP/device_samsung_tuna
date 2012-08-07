@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Galaxy Nexus Ayarları</string>
+    <string name="general_title">GENEL</string>
+    <string name="display_title">EKRAN</string>
+    <string name="category_cpu_title">İŞLEMCİ</string>
+    <string name="category_screen_title">WM8994 Ayarları ( voodoo )</string>
+    <string name="color_tuning_title_head">Renk Çarpan Ayarları</string>
+    <string name="color_tuning_summary_head">Ekran Çarpan Rengini Kalibre Et</string>
+    <string name="gamma_tuning_title_head">Gamma Renk Ayarları</string>
+    <string name="gamma_tuning_summary_head">Gamma Renk Düzeltmesini Kalibre Et</string>
+    <string name="color_hack_presets_title_head">Renk Ön Ayarları</string>
+    <string name="color_hack_presets_summary_head">Bazı kullanıcılar tarafından test edilmiş Gamma ve çarpan ön ayarları</string>
+    <string name="color_red_title">Kırmızı</string>
+    <string name="color_green_title">Yeşil</string>
+    <string name="color_blue_title">Mavi</string>
+    <string name="gamma_default_title">Varsayılan</string>
+    <string name="gamma_CM_title">CM Ayarları</string>
+    <string name="gamma_bright_title">Parlaklık Ayarları</string>
+    <string name="color_default_title">Varsayılan</string>
+    <string name="color_CM_title">CM Ayarları</string>
+    <string name="color_dark_title">Karanlık Ayarları</string>
+    <string name="gamma_dss_title">DSS Gamma Ayarı</string>
+    <string name="category_hardware_title">İŞLEMCİ</string>
+    <string name="vibrator_tuning_title_head">Titreşim geribildirim Ayarı</string>
+    <string name="vibrator_tuning_summary_head">Varsayılan güç kontrolü geribildirim titreşimi</string>
+    <string name="vibrator_title">Titreşim %</string>
+    <string name="vibrator_default_title">Varsayılan</string>
+    <string name="preset1_default_title">Varsayılan</string>
+    <string name="preset2_default_title">Doğal</string>
+    <string name="preset3_default_title">Koyu Mavi</string>
+    <string name="preset4_default_title">Sıcak</string>
+    <string name="preset5_default_title">Soğuk</string>
+    <string name="preset6_default_title">Çapraz süreç</string>
+    <string name="credits_presets">Kaynaklar: ale.landra91 cpaixao provolinoo</string>
+    <string name="category_touchkey_title">Dokunmatik Tuşlar</string>
+    <string name="touchkey_notification_title_head">Arka Işık Bildirimleri</string>
+    <string name="touchkey_notification_summary_head">Bir bildirim olduğunda dokunmatik tuş arkaplanında ışık yanar.</string>
+    <string name="category_radio_title">Radio</string>
+    <string name="hspa_title_head">HSPA</string>
+    <string name="hspa_summary_head">HSDPA/HSUPA Aktif Et</string>
+</resources>
