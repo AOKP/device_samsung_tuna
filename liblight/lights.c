@@ -27,7 +27,7 @@
 #include <linux/leds-an30259a.h>
 
 #ifndef LIBLIGHTS_SUPPORT_CHARGING_LED
-#  define LIBLIGHTS_SUPPORT_CHARGING_LED 0
+#  define LIBLIGHTS_SUPPORT_CHARGING_LED 1
 #endif
 
 static pthread_once_t g_init = PTHREAD_ONCE_INIT;
