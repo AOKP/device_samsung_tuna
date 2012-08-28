@@ -16,6 +16,7 @@
 
 #define LOG_TAG "lights"
 #include <cutils/log.h>
+#include <cutils/properties.h>
 #include <stdint.h>
 #include <string.h>
 #include <errno.h>
@@ -27,7 +28,7 @@
 #include <linux/leds-an30259a.h>
 
 #ifndef LIBLIGHTS_SUPPORT_CHARGING_LED
-#  define LIBLIGHTS_SUPPORT_CHARGING_LED 0
+#  define LIBLIGHTS_SUPPORT_CHARGING_LED 1
 #endif
 
 static pthread_once_t g_init = PTHREAD_ONCE_INIT;
@@ -261,7 +262,15 @@ static int open_lights(const struct hw_module_t *module, char const *name,
         set_light = set_light_leds_attention;
 #if LIBLIGHTS_SUPPORT_CHARGING_LED
     else if (0 == strcmp(LIGHT_ID_BATTERY, name))
-        set_light = set_light_leds_battery;
+    {
+        char value[PROPERTY_VALUE_MAX];
+        property_get("persist.sys.enable-charging-led", value, "0");
+        int enable_charging_led = atoi(value);
+        if (enable_charging_led == 1)
+            set_light = set_light_leds_battery;
+        else
+            return -EINVAL;
+    }
 #endif
     else
         return -EINVAL;
