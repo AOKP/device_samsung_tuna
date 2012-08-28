@@ -106,6 +106,10 @@ PRODUCT_DEFAULT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
     persist.sys.enable-charging-led=0
 
+# LED brightness property
+PRODUCT_PROPERTY_OVERRIDES += \
+     persist.sys.led-brightness=31
+
 # SIM Toolkit
 PRODUCT_PACKAGES += \
 	Stk

@@ -202,7 +202,12 @@ static int set_light_leds(struct light_state_t const *state, int type)
             g_led_states[type].time_slope_up_2 = (SLOPE_UP_2 * state->flashOnMS) / 1000;
             g_led_states[type].time_slope_down_1 = (SLOPE_DOWN_1 * state->flashOnMS) / 1000;
             g_led_states[type].time_slope_down_2 = (SLOPE_DOWN_2 * state->flashOnMS) / 1000;
-            g_led_states[type].mid_brightness = MID_BRIGHTNESS;
+
+            char value[PROPERTY_VALUE_MAX];
+            property_get("persist.sys.led-brightness", value, 31);
+            int brightness = atoi(value);
+            g_led_states[type].mid_brightness = brightness;
+
             g_led_states[type].time_off = state->flashOffMS;
             break;
         default:
