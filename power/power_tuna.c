@@ -131,19 +131,8 @@ static void tuna_power_set_interactive(struct power_module *module, int on)
      * Lower maximum frequency when screen is off.  CPU 0 and 1 share a
      * cpufreq policy.
      */
-    if (!on) {
-        /* read the current scaling max freq and save it before updating */
-        len = sysfs_read(SCALINGMAXFREQ_PATH, buf, sizeof(buf));
 
-        if (len != -1)
-            memcpy(scaling_max_freq, buf, sizeof(buf));
-
-        sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-                    on ? scaling_max_freq : screen_off_max_freq);
-    }
-    else
-        sysfs_write("/sys/devices/system/cpu/cpu0/cpufreq/scaling_max_freq",
-                    on ? scaling_max_freq : screen_off_max_freq);
+    sysfs_write(SCREENOFFMAXFREQ_PATH,screen_off_max_freq);
 }
 
 static void tuna_power_hint(struct power_module *module, power_hint_t hint,
