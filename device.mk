@@ -186,6 +186,10 @@ PRODUCT_PROPERTY_OVERRIDES += \
 PRODUCT_PROPERTY_OVERRIDES += \
 	ro.hwui.disable_scissor_opt=true
 
+PRODUCT_PROPERTY_OVERRIDES += \
+    dalvik.vm.heapsize=384m \
+    dalvik.vm.heapgrowthlimit=64m
+
 PRODUCT_CHARACTERISTICS := nosdcard
 
 PRODUCT_TAGS += dalvik.gc.type-precise
