@@ -32,6 +32,9 @@ TARGET_ARCH := arm
 TARGET_ARCH_VARIANT := armv7-a-neon
 ARCH_ARM_HAVE_TLS_REGISTER := true
 
+# Set target cpu variant
+TARGET_CPU_VARIANT := cortex-a9
+
 TARGET_NO_BOOTLOADER := true
 
 BOARD_KERNEL_BASE := 0x80000000
