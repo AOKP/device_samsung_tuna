@@ -257,7 +257,7 @@
 
         <!-- empty string to disable, or like: /sys/kernel/fast_charge/force_fast_charge
          it is disabled by default so devices need to add an overlay to enable-->
-    <string name="config_fastChargePath" translatable="false">/sys/kernel/fast_charge/force_fast_charge</string>
+    <!-- <string name="config_fastChargePath" translatable="false">/sys/kernel/fast_charge/force_fast_charge</string> -->
 
     <!-- Enable translucent lockscreen-->
     <bool name="config_enableLockScreenTranslucentDecor">true</bool>
