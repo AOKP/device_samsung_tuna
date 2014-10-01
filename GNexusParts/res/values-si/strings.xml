@@ -16,11 +16,11 @@
   <string name="color_green_title">කොළ</string>
   <string name="color_blue_title">නිල්</string>
   <string name="gamma_default_title">පෙරනිමි</string>
-  <string name="gamma_CM_title">CM සැකසීම්</string>
-  <string name="gamma_bright_title">දීප්ත සැකසීම්</string>
+  <string name="gamma_CM_title">CM සැක.</string>
+  <string name="gamma_bright_title">දීප්ත සැක.</string>
   <string name="color_default_title">පෙරනිමි</string>
-  <string name="color_CM_title">CM සැකසීම්</string>
-  <string name="color_dark_title">අඳුරු සැකසීම්</string>
+  <string name="color_CM_title">CM සැක.</string>
+  <string name="color_dark_title">අඳුරු සැක.</string>
   <string name="gamma_dss_title">DSS ගැමා සැකසීම</string>
   <string name="category_hardware_title">මධ්‍යම සැකසුම් ඒකකය</string>
   <string name="vibrator_tuning_title_head">කම්පකයේ ප්‍රතිචාරය සුසරනය</string>
@@ -32,7 +32,7 @@
   <string name="preset3_default_title">තද නිල්</string>
   <string name="preset4_default_title">උණුසුම්</string>
   <string name="preset5_default_title">අඳුරු සිසිල්</string>
-  <string name="preset6_default_title">දෙමහුන් ක්‍රියාවලිය</string>
+  <string name="preset6_default_title">දෙමහුන් ක්‍රියා.</string>
   <string name="credits_presets">ස්තූතිය: ale.landra91 cpaixao provolinoo</string>
   <string name="category_touchkey_title">ස්පර්ශ යතුරු</string>
   <string name="touchkey_notification_title_head">පසුපස එළි දැනුම්දීම්</string>
